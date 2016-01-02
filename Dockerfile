@@ -5,6 +5,7 @@ MAINTAINER Gene Crucean <genecrucean+hub.docker.com@gmail.com>
 
 ENV SWIFT_VERSION 2.2-SNAPSHOT-2015-12-31-a
 ENV SWIFT_PLATFORM ubuntu14.04
+ENV FILE_LOCATION /FILES
 
 # Install related packages
 RUN apt-get update && \
@@ -32,12 +33,36 @@ ENV PATH /usr/bin:$PATH
 # Print Installed Swift Version
 RUN swift --version
 
-
 #####################################################################
 ## PERFECT ##
+WORKDIR $FILE_LOCATION
+ADD src/ $FILE_LOCATION/src/
 
-# RUN git clone https://github.com/PerfectlySoft/Perfect.git
-# cd ~/Perfect/PerfectLib
-# make
-# sudo make install
-# ls /usr/local/lib/*Perfect* # This should list "/usr/local/lib/PerfectLib.so  /usr/local/lib/PerfectLib.swiftdoc  /usr/local/lib/PerfectLib.swiftmodule"
+RUN git clone https://github.com/PerfectlySoft/Perfect.git
+WORKDIR $FILE_LOCATION/Perfect/PerfectLib
+RUN make \
+    && make install
+    # && ls /usr/local/lib/*Perfect* # This should list "/usr/local/lib/PerfectLib.so  /usr/local/lib/PerfectLib.swiftdoc  /usr/local/lib/PerfectLib.swiftmodule"
+
+WORKDIR $FILE_LOCATION/Perfect/PerfectServer
+RUN make \
+    && ln -s $FILE_LOCATION/Perfect/PerfectServer/perfectserverhttp /usr/local/bin/perfectserverhttp \
+    && ln -s $FILE_LOCATION/Perfect/PerfectServer/perfectserverfcgi /usr/local/bin/perfectserverfcgi
+
+
+
+
+
+WORKDIR $FILE_LOCATION
+
+# Expose some ports.
+EXPOSE 80
+EXPOSE 443
+EXPOSE 8181
+
+# Run app.
+# CMD [“executable”, “param1”, “param2”]
+# CMD [perfectserverhttp]
+CMD perfectserverhttp
+# RUN perfectserverhttp
+# ENTRYPOINT [perfectserverhttp]
