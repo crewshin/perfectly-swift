@@ -1,9 +1,4 @@
-## These are just commands I used while testing dev. Feel free to ignore this file.
+# Place logic in here to build and run your custom app.
 
-docker build -t crewshin/perfectly-swift .
-
-docker run -i -t --name perfectly-swift crewshin/perfectly-swift:latest bash
-docker run -it -p 80:80 -p 443:443 -p 8181:8181 --name perfectly-swift crewshin/perfectly-swift:latest bash
-docker run -it -p 443:443 -p 80:8181 --name perfectly-swift crewshin/perfectly-swift:latest bash
-
-docker build -t crewshin/perfectly-swift . && docker run -it -p 443:443 -p 80:8181 --name perfectly-swift crewshin/perfectly-swift:latest bash
+swiftc -I /usr/local/lib -I /usr/local/include/libbson-1.0/ -c swift-router/URL Routing.xcworkspace
+clang++ -L /swift/usr/lib/swift/linux -g -l Foundation -l swiftCore -l swiftGlibc /usr/local/lib/PerfectLib.so /usr/local/lib/PostgreSQL.so -Xlinker -rpath -Xlinker /swift/usr/lib/swift/linux app.o -o app
